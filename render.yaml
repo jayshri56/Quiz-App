@@ -1,0 +1,79 @@
+services:
+  # Database
+  - type: database
+    name: quiz-db
+    databaseName: quizdb
+    user: postgres
+    plan: free
+
+  # Service Registry
+  - type: web
+    name: service-registry
+    env: docker
+    dockerContext: backend/service-registry
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: docker
+
+  # User Service
+  - type: web
+    name: user-service
+    env: docker
+    dockerContext: backend/user-service
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: docker
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://quiz-db:5432/quizdb
+      - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: http://service-registry:8761/eureka/
+
+  # Question Service
+  - type: web
+    name: question-service
+    env: docker
+    dockerContext: backend/question-service
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: docker
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://quiz-db:5432/quizdb
+      - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: http://service-registry:8761/eureka/
+
+  # Quiz Service
+  - type: web
+    name: quiz-service
+    env: docker
+    dockerContext: backend/quiz-service
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: docker
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://quiz-db:5432/quizdb
+      - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: http://service-registry:8761/eureka/
+
+  # Frontend Admin
+  - type: web
+    name: frontend-admin
+    env: docker
+    dockerContext: frontend/admin
+    dockerfilePath: Dockerfile
+    plan: free
+
+  # Frontend User
+  - type: web
+    name: frontend-user
+    env: docker
+    dockerContext: frontend/user
+    dockerfilePath: Dockerfile
+    plan: free

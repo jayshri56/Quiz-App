@@ -5,8 +5,8 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Use OpenJDK for the final image
-FROM openjdk:17-jdk-slim
+# Use Eclipse Temurin for the final image (more stable)
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8761
