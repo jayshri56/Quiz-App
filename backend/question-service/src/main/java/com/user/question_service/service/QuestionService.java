@@ -1,7 +1,9 @@
 package com.user.question_service.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,14 +74,8 @@ public class QuestionService {
 	}
 
 	public ResponseEntity<List<QuestionWrapper>> getQuestionsFromId(List<Integer> questionIds) {
-		// TODO Auto-generated method stub
-
+		List<Question> questions = questionDao.findAllById(questionIds);
 		List<QuestionWrapper> wrappers = new ArrayList<>();
-		List<Question> questions = new ArrayList<>();
-
-		for (Integer id : questionIds) {
-			questionDao.findById(id).ifPresent(questions::add);
-		}
 
 		for (Question question : questions) {
 			QuestionWrapper wrapper = new QuestionWrapper();
@@ -90,30 +86,26 @@ public class QuestionService {
 			wrapper.setOption3(question.getOption3());
 			wrapper.setOption4(question.getOption4());
 			wrappers.add(wrapper);
-
 		}
 		return new ResponseEntity<>(wrappers, HttpStatus.OK);
 	}
 
-	// public → accessible from anywhere.
-	// ResponseEntity<Integer> → returns an HTTP response containing an Integer
-	// score.
-	// getScore(...) → method name.
-	// List<Response> responses → accepts a list of answers submitted by the user.
-
 	public ResponseEntity<Integer> getScore(List<Response> responses) {
-		// Creates a counter variable.
-		// Stores how many answers are correct.
-		int right = 0;
+		List<Integer> ids = new ArrayList<>();
+		for (Response r : responses) ids.add(r.getId());
+		
+		List<Question> questions = questionDao.findAllById(ids);
+		Map<Integer, String> answers = new HashMap<>();
+		for (Question q : questions) answers.put(q.getId(), q.getRightAnswer());
 
+		int right = 0;
 		for (Response response : responses) {
-			Optional<Question> questionOpt = questionDao.findById(response.getId());
-			if (questionOpt.isPresent() && response.getResponse().equals(questionOpt.get().getRightAnswer())) {
+			String correct = answers.get(response.getId());
+			if (correct != null && response.getResponse().equals(correct)) {
 				right++;
 			}
 		}
 		return new ResponseEntity<>(right, HttpStatus.OK);
-
 	}
 
 }
