@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.user.quiz_service.entity.QuestionWrapper;
 import com.user.quiz_service.entity.Response;
 
-@FeignClient(name = "QUESTION-SERVICE", url = "https://question-service-pqb2.onrender.com")
+@FeignClient(name = "QUESTION-SERVICE", url = "http://question-service:8081")
 public interface QuizInterface {
 
     @GetMapping("question/generate")

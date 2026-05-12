@@ -38,10 +38,25 @@ public class QuizService {
     }
 
     public ResponseEntity<List<QuestionWrapper>> getQuizQuestions(Integer id) {
-        Quiz quiz = quizDao.findById(id).get();
+        Optional<Quiz> quizOpt = quizDao.findById(id);
+        if (quizOpt.isEmpty()) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NOT_FOUND);
+        }
+        
+        Quiz quiz = quizOpt.get();
         List<Integer> questionIds = quiz.getQuestionsId();
-        ResponseEntity<List<QuestionWrapper>> questions = quizInterface.getQuestionsFromId(questionIds);
-        return questions;
+        
+        if (questionIds == null || questionIds.isEmpty()) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
+        
+        try {
+            ResponseEntity<List<QuestionWrapper>> questions = quizInterface.getQuestionsFromId(questionIds);
+            return questions;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.SERVICE_UNAVAILABLE);
+        }
     }
 
     public ResponseEntity<List<Quiz>> getAllQuizzes() {
