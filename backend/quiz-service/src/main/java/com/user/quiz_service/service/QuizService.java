@@ -28,13 +28,18 @@ public class QuizService {
     // QuestionDao questionDao;
 
     public ResponseEntity<Integer> createQuiz(String category, int numQ, String title) {
-        List<Integer> questions = quizInterface.getQuestionsForQuiz(category, numQ).getBody();
-        Quiz quiz = new Quiz();
-        quiz.setTitle(title);
-        quiz.setQuestionsId(questions);
-        Quiz savedQuiz = quizDao.save(quiz);
+        try {
+            List<Integer> questions = quizInterface.getQuestionsForQuiz(category, numQ).getBody();
+            Quiz quiz = new Quiz();
+            quiz.setTitle(title);
+            quiz.setQuestionsId(questions);
+            Quiz savedQuiz = quizDao.save(quiz);
 
-        return new ResponseEntity<>(savedQuiz.getId(), HttpStatus.CREATED);
+            return new ResponseEntity<>(savedQuiz.getId(), HttpStatus.CREATED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(-1, HttpStatus.SERVICE_UNAVAILABLE);
+        }
     }
 
     public ResponseEntity<List<QuestionWrapper>> getQuizQuestions(Integer id) {
