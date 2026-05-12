@@ -94,7 +94,8 @@ const App = () => {
       setResponses([]);
       setView('play');
     } catch (err) {
-      setError(`Failed to start ${topic.name} quiz. Make sure questions exist for this topic.`);
+      console.error("Quiz Start Error:", err);
+      setError(`Failed to start ${topic.name} quiz. ${err.message}. Make sure questions exist and services are awake.`);
     } finally {
       setTopicLoading(null);
     }
