@@ -78,11 +78,11 @@ public class QuestionService {
 		List<Question> questions = new ArrayList<>();
 
 		for (Integer id : questionIds) {
-			questions.add(questionDao.findById(id).get());
+			questionDao.findById(id).ifPresent(questions::add);
 		}
 
 		for (Question question : questions) {
-			QuestionWrapper wrapper = new QuestionWrapper(null, null, null, null, null, null);
+			QuestionWrapper wrapper = new QuestionWrapper();
 			wrapper.setId(question.getId());
 			wrapper.setQuestionTitle(question.getQuestionTitle());
 			wrapper.setOption1(question.getOption1());
@@ -107,10 +107,9 @@ public class QuestionService {
 		int right = 0;
 
 		for (Response response : responses) {
-			Question question = questionDao.findById(response.getId()).get();
-			if (response.getResponse().equals(question.getRightAnswer())) {
+			Optional<Question> questionOpt = questionDao.findById(response.getId());
+			if (questionOpt.isPresent() && response.getResponse().equals(questionOpt.get().getRightAnswer())) {
 				right++;
-
 			}
 		}
 		return new ResponseEntity<>(right, HttpStatus.OK);
